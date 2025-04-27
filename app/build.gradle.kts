@@ -65,4 +65,25 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    //Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+
+    //Gson
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    ///courouton
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+    // ViewModel & LiveData
+    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    //glide
+    implementation ("androidx.fragment:fragment-ktx:1.8.6")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
+
+    implementation ("com.google.android.material:material:1.5.0")
+
 }

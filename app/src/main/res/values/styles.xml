@@ -1,0 +1,10 @@
+<resources>
+    <style name="RoundedImage">
+        <item name="shapeAppearanceOverlay">@style/RoundedCorner</item>
+    </style>
+
+    <style name="RoundedCorner">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
+    </style>
+</resources>

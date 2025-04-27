@@ -163,11 +163,11 @@ class Register : AppCompatActivity() {
                     }
                 }
             }
-//        override fun onStart() {
-//        super.onStart()
-//        if (auth.currentUser != null) {
-//            startActivity(Intent(this, MainActivity::class.java))
-//            finish()
-//        }
-//    }
+        override fun onStart() {
+        super.onStart()
+        if (auth.currentUser != null) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+    }
     }

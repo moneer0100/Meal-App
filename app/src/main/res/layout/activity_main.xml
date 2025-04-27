@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
     <fragment
         android:id="@+id/myFragment"
-        android:name="com.example.mealapp.HomeFragment"
+        android:name="com.example.mealapp.view.HomeFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
