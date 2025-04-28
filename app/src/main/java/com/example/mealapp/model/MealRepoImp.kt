@@ -24,4 +24,9 @@ class MealRepoImp(private val mealRepo: MealRemoteImp):MealRepoInf {
         return flowOf(response.dataRandomMeal)
 
     }
+
+    override suspend fun getCategory(): Flow<List<CategoryMeal>> {
+        val response=mealRepo.getCategory()
+        return flowOf(response.categories)
+    }
 }

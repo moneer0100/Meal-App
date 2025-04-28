@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Meal App</string>
     <string name="default_web_client_id">"504860853740-n4lk52sddo8463rmhrujivlg3hs3c1f8.apps.googleusercontent.com"</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

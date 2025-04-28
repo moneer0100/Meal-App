@@ -4,4 +4,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface MealRepoInf {
     suspend fun getRandom():Flow<List<RandomMeal>>
+    suspend fun getCategory():Flow<List<CategoryMeal>>
 }

@@ -1,6 +1,7 @@
 package com.example.mealapp.network
 
 
+import com.example.mealapp.model.CategoryResponse
 import com.example.mealapp.model.RandomResponse
 
 class MealRemoteImp private constructor(private val apiService: ApiService):MealRemoteInf {
@@ -16,6 +17,10 @@ class MealRemoteImp private constructor(private val apiService: ApiService):Meal
     override suspend fun getRandom(): RandomResponse {
 
         return apiService.getRandom()
+    }
+
+    override suspend fun getCategory(): CategoryResponse {
+        return apiService.getCategory()
     }
 
 }

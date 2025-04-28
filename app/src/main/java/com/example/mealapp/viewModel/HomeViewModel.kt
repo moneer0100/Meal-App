@@ -3,6 +3,7 @@ package com.example.mealapp.viewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mealapp.model.CategoryMeal
 import com.example.mealapp.model.MealRepoImp
 import com.example.mealapp.model.RandomMeal
 import com.example.mealapp.network.ResponseState
@@ -20,6 +21,14 @@ class HomeViewModel(private val repo : MealRepoImp) : ViewModel() {
             repo.getRandom()?.catch { error->_randomMeal.value=ResponseState.Error(error) }
                 ?.collect{data->_randomMeal.value=ResponseState.Success(data)
                     Log.d("viewModel", "getRandomMeal: $data")}
+        }
+    }
+    private val _categoryMeal=MutableStateFlow<ResponseState<List<CategoryMeal>>>(ResponseState.Loading)
+    val categoryMeal=_categoryMeal.asStateFlow()
+    fun getCategoryMeal(){
+        viewModelScope.launch (Dispatchers.IO){
+            repo.getCategory()?.catch { error->_categoryMeal.value=ResponseState.Error(error) }
+                ?.collect{data-> _categoryMeal.value=ResponseState.Success(data)}
         }
     }
 

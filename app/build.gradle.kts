@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android) // إزالة التكرار
     alias(libs.plugins.google.gms.google.services)
+    id ("kotlin-kapt")
 }
 
 android {
@@ -59,7 +60,9 @@ dependencies {
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.fragment.ktx)  // تتوافق مع الإصدارات الأخرى
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)  // تتوافق مع الإصدارات الأخرى
 
     // Test dependencies
     testImplementation(libs.junit)
@@ -82,8 +85,11 @@ dependencies {
     //glide
     implementation ("androidx.fragment:fragment-ktx:1.8.6")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
+//    kapt ("com.github.bumptech.glide:compiler:4.16.0")
 
     implementation ("com.google.android.material:material:1.5.0")
+    //navigation
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.6.0")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.6.0")
 
 }
