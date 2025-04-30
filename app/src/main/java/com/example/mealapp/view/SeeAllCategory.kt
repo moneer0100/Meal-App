@@ -51,7 +51,8 @@ class SeeAllCategory : Fragment() {
 
 
         homeAdapter = HomeAdapter { categoryMeal ->
-            // TODO: handle item click if needed
+            val action = SeeAllCategoryDirections.actionSeeAllCategoryToSubCategory(categoryMeal.strCategory)
+            findNavController().navigate(action)
         }
 
         binding.recyclerViewCategory.apply {
