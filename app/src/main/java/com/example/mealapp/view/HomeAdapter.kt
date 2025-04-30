@@ -30,7 +30,7 @@ class HomeAdapter(private val onItemClick: (CategoryMeal) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        if (position >= 8) return
+
         val category = getItem(position)
         holder.binding.apply {
             textView18.text = category.strCategory

@@ -1,8 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android) // إزالة التكرار
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     id ("kotlin-kapt")
+    id ("androidx.navigation.safeargs.kotlin")
 }
 
 android {

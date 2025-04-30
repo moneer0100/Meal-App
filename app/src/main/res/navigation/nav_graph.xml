@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_homeFragment_to_sideMenu"
             app:destination="@id/sideMenu" />
+        <action
+            android:id="@+id/action_homeFragment_to_subCategory"
+            app:destination="@id/subCategory" />
     </fragment>
     <fragment
         android:id="@+id/seeAllCategory"
@@ -29,5 +32,36 @@
         android:id="@+id/sideMenu"
         android:name="com.example.mealapp.view.SideMenu"
         android:label="fragment_side_menu"
-        tools:layout="@layout/fragment_side_menu" />
+        tools:layout="@layout/fragment_side_menu" >
+        <action
+            android:id="@+id/action_sideMenu_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_sideMenu_to_favouriteScreen"
+            app:destination="@id/favouriteScreen" />
+        <action
+            android:id="@+id/action_sideMenu_to_historyScreen"
+            app:destination="@id/historyScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/favouriteScreen"
+        android:name="com.example.mealapp.FavouriteScreen"
+        android:label="fragment_favourite_screen"
+        tools:layout="@layout/fragment_favourite_screen" />
+    <fragment
+        android:id="@+id/historyScreen"
+        android:name="com.example.mealapp.HistoryScreen"
+        android:label="fragment_history_screen"
+        tools:layout="@layout/fragment_history_screen" />
+    <fragment
+        android:id="@+id/subCategory"
+        android:name="com.example.mealapp.view.SubCategory"
+        android:label="SubCategory" >
+        <argument
+            android:name="category"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_subCategory_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 </navigation>

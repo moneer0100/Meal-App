@@ -3,6 +3,8 @@ package com.example.mealapp.network
 
 import com.example.mealapp.model.CategoryResponse
 import com.example.mealapp.model.RandomResponse
+import com.example.mealapp.model.SubCategoryMeal
+import com.example.mealapp.model.SubCategoryResponse
 
 class MealRemoteImp private constructor(private val apiService: ApiService):MealRemoteInf {
     companion object {
@@ -21,6 +23,10 @@ class MealRemoteImp private constructor(private val apiService: ApiService):Meal
 
     override suspend fun getCategory(): CategoryResponse {
         return apiService.getCategory()
+    }
+
+    override suspend fun getSubCategory(category: String): SubCategoryResponse {
+        return apiService.getSubCategory(category)
     }
 
 }

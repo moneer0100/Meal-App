@@ -48,7 +48,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         homeAdapter = HomeAdapter { categoryMeal ->
-            // TODO: handle item click if needed
+            val action = HomeFragmentDirections.actionHomeFragmentToSubCategory(categoryMeal.strCategory)
+            findNavController().navigate(action)
         }
 
         val user = FirebaseAuth.getInstance().currentUser
@@ -70,6 +71,9 @@ class HomeFragment : Fragment() {
         binding.textView17.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_seeAllCategory)
 
+        }
+        binding.imageView15.setOnClickListener{
+            findNavController().navigate(R.id.action_homeFragment_to_sideMenu)
         }
         lifecycleScope.launch(Dispatchers.Main) {
             launch {

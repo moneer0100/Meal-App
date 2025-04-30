@@ -1,60 +1,71 @@
 package com.example.mealapp.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.example.mealapp.Login
 import com.example.mealapp.R
+import com.example.mealapp.databinding.FragmentHomeBinding
+import com.example.mealapp.databinding.FragmentSideMenuBinding
+import com.google.firebase.auth.FirebaseAuth
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SideMenu.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SideMenu : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentSideMenuBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_side_menu, container, false)
+
+        _binding = FragmentSideMenuBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SideMenu.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SideMenu().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            val userName = user.displayName ?: user.email ?: "Unknown User"
+            val firstName = userName.split(" ").firstOrNull()?.lowercase()?.replaceFirstChar { it.uppercase() } ?: "Unknown"
+            binding.textView21.text = firstName
+
+            val photoUrl = user.photoUrl
+            if (photoUrl != null) {
+                Glide.with(this)
+                    .load(photoUrl)
+                    .placeholder(R.drawable.name) // صورة افتراضية
+                    .into(binding.imageView23)
+        } else {
+            binding.textView21.text = "Guest"
+        }
     }
-}
+        binding.imageView24.setOnClickListener{
+            findNavController().navigate(R.id.action_sideMenu_to_homeFragment)
+        }
+        binding.imageView22.setOnClickListener{
+            findNavController().navigate(R.id.action_sideMenu_to_homeFragment)
+        }
+        binding.imageView25.setOnClickListener{
+            findNavController().navigate(R.id.action_sideMenu_to_favouriteScreen)
+        }
+        binding.imageView26.setOnClickListener {
+            findNavController().navigate(R.id.action_sideMenu_to_historyScreen)
+        }
+        binding.imageView27.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+
+            val intent = Intent(requireContext(), Login::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
+}}

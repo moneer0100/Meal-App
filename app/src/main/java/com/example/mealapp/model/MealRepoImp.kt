@@ -29,4 +29,9 @@ class MealRepoImp(private val mealRepo: MealRemoteImp):MealRepoInf {
         val response=mealRepo.getCategory()
         return flowOf(response.categories)
     }
+
+    override suspend fun getSubCategory(category: String): Flow<List<SubCategoryMeal>> {
+        val response=mealRepo.getSubCategory(category)
+        return flowOf(response.meals)
+    }
 }
