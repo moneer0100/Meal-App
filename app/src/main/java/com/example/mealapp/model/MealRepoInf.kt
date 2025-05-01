@@ -6,4 +6,5 @@ interface MealRepoInf {
     suspend fun getRandom():Flow<List<RandomMeal>>
     suspend fun getCategory():Flow<List<CategoryMeal>>
     suspend fun getSubCategory(category:String):Flow<List<SubCategoryMeal>>
+    suspend fun getCategoryDetails(id:String):Flow<List<Meals>>
 }

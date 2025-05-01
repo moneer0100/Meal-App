@@ -2,6 +2,7 @@ package com.example.mealapp.network
 
 
 import com.example.mealapp.model.CategoryResponse
+import com.example.mealapp.model.MealDetailsResponse
 import com.example.mealapp.model.RandomResponse
 import com.example.mealapp.model.SubCategoryMeal
 import com.example.mealapp.model.SubCategoryResponse
@@ -27,6 +28,10 @@ class MealRemoteImp private constructor(private val apiService: ApiService):Meal
 
     override suspend fun getSubCategory(category: String): SubCategoryResponse {
         return apiService.getSubCategory(category)
+    }
+
+    override suspend fun getCategoryDetails(id: String): MealDetailsResponse {
+        return apiService.getCategoryDetails(id)
     }
 
 }

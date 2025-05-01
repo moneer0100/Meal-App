@@ -48,7 +48,10 @@ class SubCategory : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val category = arguments?.getString("category") ?: ""
 
-        subCategoryAdapter=SubCategoryAdapter{subCategoryMeal ->  }
+        subCategoryAdapter=SubCategoryAdapter{subCategoryMeal ->
+            val action=SubCategoryDirections.actionSubCategoryToRecipe(subCategoryMeal.idMeal)
+            findNavController().navigate(action)
+        }
         binding.recyclersubCategory.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = subCategoryAdapter

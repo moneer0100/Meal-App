@@ -75,33 +75,46 @@ class HomeFragment : Fragment() {
         binding.imageView15.setOnClickListener{
             findNavController().navigate(R.id.action_homeFragment_to_sideMenu)
         }
-        lifecycleScope.launch(Dispatchers.Main) {
-            launch {
-                viewModel.randomMeal.collectLatest { viewStateResult ->
-                    when (viewStateResult) {
-                        is ResponseState.Success -> {
-                            val random = viewStateResult.data
-                            if (random != null && random.isNotEmpty()) {
-                                binding.textView13.text = random[0].strCategory
-                                binding.textView14.text = random[0].strArea
-                                binding.textView15.text = random[0].strMeal
-                                Glide.with(requireContext())
-                                    .load(random[0].strMealThumb)
-                                    .into(binding.imageView17)
-                            } else {
-                                binding.textView13.text = "No meal found"
+
+                lifecycleScope.launch(Dispatchers.Main) {
+                    launch {
+                        viewModel.randomMeal.collectLatest { viewStateResult ->
+                            when (viewStateResult) {
+                                is ResponseState.Success -> {
+                                    val random = viewStateResult.data
+                                    if (!random.isNullOrEmpty()) {
+                                        val meal = random[0]
+
+                                        // Set UI
+                                        binding.textView13.text = meal.strCategory
+                                        binding.textView14.text = meal.strArea
+                                        binding.textView15.text = meal.strMeal
+                                        Glide.with(requireContext())
+                                            .load(meal.strMealThumb)
+                                            .into(binding.imageView17)
+
+                                        // ✅ Set click listener here
+                                        binding.cardView.setOnClickListener {
+                                            val bundle = Bundle().apply {
+                                                putString("id", meal.idMeal)
+                                            }
+                                            findNavController().navigate(R.id.action_homeFragment_to_recipe, bundle)
+                                        }
+                                    } else {
+                                        binding.textView13.text = "No meal found"
+                                    }
+                                }
+
+                                is ResponseState.Error -> {
+                                    binding.textView13.text = "Error loading meal"
+                                }
+
+                                is ResponseState.Loading -> {
+                                    binding.textView13.text = "Loading..."
+                                }
                             }
                         }
-                        is ResponseState.Error -> {
-                            binding.textView13.text = "Error loading meal"
-                        }
-                        is ResponseState.Loading -> {
-                            binding.textView13.text = "Loading..."
-                        }
                     }
-                }
-            }
-
             launch {
                 viewModel.categoryMeal.collectLatest { viewStateResult ->
                     when (viewStateResult) {

@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_homeFragment_to_subCategory"
             app:destination="@id/subCategory" />
+        <action
+            android:id="@+id/action_homeFragment_to_recipe"
+            app:destination="@id/recipe" />
     </fragment>
     <fragment
         android:id="@+id/seeAllCategory"
@@ -72,7 +75,11 @@
     </fragment>
     <fragment
         android:id="@+id/recipe"
-        android:name="com.example.mealapp.Recipe"
+        android:name="com.example.mealapp.view.CategoryDetails"
         android:label="fragment_recipe"
-        tools:layout="@layout/fragment_recipe" />
+        tools:layout="@layout/fragment_recipe" >
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </fragment>
 </navigation>

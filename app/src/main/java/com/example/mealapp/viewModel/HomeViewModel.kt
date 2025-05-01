@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mealapp.model.CategoryMeal
 import com.example.mealapp.model.MealRepoImp
+import com.example.mealapp.model.Meals
 import com.example.mealapp.model.RandomMeal
 import com.example.mealapp.model.SubCategoryMeal
 import com.example.mealapp.network.ResponseState
@@ -39,6 +40,14 @@ class HomeViewModel(private val repo : MealRepoImp) : ViewModel() {
          repo.getSubCategory(category)?.catch { error->_subCategory.value=ResponseState.Error(error) }
              ?.collect{data->_subCategory.value=ResponseState.Success(data)}
      }
+    }
+    private val _categoryDetails=MutableStateFlow<ResponseState<List<Meals>>>(ResponseState.Loading)
+    val categoryDetails=_categoryDetails.asStateFlow()
+    fun getCategoryDetails(id:String){
+        viewModelScope.launch(Dispatchers.IO){
+            repo.getCategoryDetails(id)?.catch { error->_categoryDetails.value=ResponseState.Error(error) }
+                ?.collect{data->_categoryDetails.value=ResponseState.Success(data)}
+        }
     }
 
 }
