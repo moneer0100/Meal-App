@@ -12,9 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 
 import com.example.mealapp.R
-import com.example.mealapp.databinding.FragmentHomeBinding
 import com.example.mealapp.databinding.FragmentRecipeBinding
-import com.example.mealapp.databinding.FragmentSubCategoryBinding
+import com.example.mealapp.databinding.FragmentVideoBinding
 import com.example.mealapp.model.MealRepoImp
 import com.example.mealapp.model.Meals
 import com.example.mealapp.model.toIngredientList
@@ -23,14 +22,17 @@ import com.example.mealapp.network.ResponseState
 import com.example.mealapp.network.RetrofitHelper
 import com.example.mealapp.viewModel.HomeViewFactory
 import com.example.mealapp.viewModel.HomeViewModel
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class CategoryDetails : Fragment() {
-    private var _binding: FragmentRecipeBinding? = null
+
+class VideoFragment : Fragment() {
+    private var _binding: FragmentVideoBinding? = null
     private val binding get() = _binding!!
-    private lateinit var meal:Meals
+
     lateinit var categoryDetailsAdapter: CategoryDetailsAdapter
     private val viewModel: HomeViewModel by viewModels {
         HomeViewFactory(
@@ -44,51 +46,53 @@ class CategoryDetails : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentRecipeBinding.inflate(inflater, container, false)
+        _binding = FragmentVideoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imageView32.setOnClickListener {
-            findNavController().navigate(R.id.action_recipe_to_subCategory)
+
+        binding.imageView36.setOnClickListener{
+            findNavController().navigate(R.id.action_videoFragment_to_recipe)
         }
+        val youTubePlayerView = binding.youtubePlayerView
+        lifecycle.addObserver(youTubePlayerView)
         categoryDetailsAdapter=CategoryDetailsAdapter{}
-        binding.recyclerView233.apply {
-            layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
+        binding.recyclerView2.apply {
+            layoutManager = LinearLayoutManager(requireContext(),
+                LinearLayoutManager.HORIZONTAL,false)
             adapter = categoryDetailsAdapter
         }
 
-            binding.button3.setOnClickListener{
-                if (::meal.isInitialized) {
-                val action = CategoryDetailsDirections.actionRecipeToVideoFragment( meal.idMeal)
-                findNavController().navigate(action)
-            }}
+        val id = arguments?.getString("mealId") ?: ""
 
-        val id = arguments?.getString("id") ?: ""
-
-            viewModel.getCategoryDetails(id)
+        viewModel.getCategoryDetails(id)
         lifecycleScope.launch(Dispatchers.Main) {
             launch {
                 viewModel.categoryDetails.collectLatest { viewStateResult ->
                     when (viewStateResult) {
                         is ResponseState.Success -> {
-                            val random = viewStateResult.data
-                            if (random != null && random.isNotEmpty()) {
-                                binding.textView28.text = random[0].strMeal
-                                meal = random[0]
-                                Glide.with(requireContext())
-                                    .load(random[0].strMealThumb)
-                                    .into(binding.imageView35)
+                            val meal = viewStateResult.data?.firstOrNull()
+                            if (meal != null ) {
+                            meal?.let {
+                                binding.textView29.text = it.strMeal
+                                binding.textViewDescription.text = it.strInstructions
+                                val videoId = it.strYoutube?.substringAfter("v=")?.take(11)
+                                videoId?.let { id ->
+                                    youTubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+                                        override fun onReady(youTubePlayer: YouTubePlayer) {
+                                            youTubePlayer.loadVideo(id, 0f)}})}}
+
                             } else {
-                                binding.textView28.text = "No meal found"
+                                binding.textView29.text = "No meal found"
                             }
                         }
                         is ResponseState.Error -> {
-                            binding.textView28.text = "Error loading meal"
+                            binding.textView29.text = "Error loading meal"
                         }
                         is ResponseState.Loading -> {
-                            binding.textView28.text = "Loading..."
+                            binding.textView29.text = "Loading..."
                         }
                     }
                 }
@@ -105,10 +109,10 @@ class CategoryDetails : Fragment() {
                             }
                         }
                         is ResponseState.Error -> {
-                            binding.textView28.text = "No categories found"
+                            binding.textView29.text = "No categories found"
                         }
                         is ResponseState.Loading -> {
-                            binding.textView28.text = "Loading..."
+                            binding.textView29.text = "Loading..."
                         }
                     }
                 }

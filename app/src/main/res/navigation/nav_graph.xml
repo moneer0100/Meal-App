@@ -81,5 +81,22 @@
         <argument
             android:name="id"
             app:argType="string" />
+        <action
+            android:id="@+id/action_recipe_to_videoFragment"
+            app:destination="@id/videoFragment" />
+        <action
+            android:id="@+id/action_recipe_to_subCategory"
+            app:destination="@id/subCategory" />
+    </fragment>
+    <fragment
+        android:id="@+id/videoFragment"
+        android:name="com.example.mealapp.view.VideoFragment"
+        android:label="fragment_video"
+        tools:layout="@layout/fragment_video" >
+        <argument android:name="mealId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_videoFragment_to_recipe"
+            app:destination="@id/recipe" />
     </fragment>
 </navigation>
