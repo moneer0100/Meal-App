@@ -1,16 +1,17 @@
-package com.example.mealapp.model
+package com.example.mealapp.model.pojo
 
-import android.util.Log
-import com.example.mealapp.network.MealRemoteImp
+import com.example.mealapp.model.dataBase.MealLocalClass
+import com.example.mealapp.model.dataBase.MealLocalInterface
+import com.example.mealapp.model.network.MealRemoteImp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class MealRepoImp(private val mealRepo: MealRemoteImp):MealRepoInf {
+class MealRepoImp(private val mealRepo: MealRemoteImp,private val mealLocal:MealLocalClass): MealRepoInf {
     companion object {
         private var instance: MealRepoImp? = null
-        fun getInstance(remoteSource: MealRemoteImp): MealRepoImp {
+        fun getInstance(remoteSource: MealRemoteImp,mealLocal: MealLocalClass): MealRepoImp {
             return instance ?: synchronized(this) {
-                instance?: MealRepoImp(remoteSource)
+                instance ?: MealRepoImp(remoteSource,mealLocal)
                     .also { instance = it }
             }
         }
@@ -39,4 +40,17 @@ class MealRepoImp(private val mealRepo: MealRemoteImp):MealRepoInf {
         val response=mealRepo.getCategoryDetails(id)
         return flowOf(response.meals)
     }
+
+    override fun getAllMeal(): Flow<List<MealDataFav>> {
+        return mealLocal.getAllData()
+    }
+
+    override suspend fun insertMovieToDav(meal: MealDataFav) {
+       return mealLocal.insertFav(meal)
+    }
+
+    override suspend fun deleteMovieFromFav(meal: MealDataFav) {
+       return mealLocal.deleteFav(meal)
+    }
+
 }

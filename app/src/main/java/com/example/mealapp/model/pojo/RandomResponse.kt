@@ -1,4 +1,4 @@
-package com.example.mealapp.model
+package com.example.mealapp.model.pojo
 
 import com.google.gson.annotations.SerializedName
 

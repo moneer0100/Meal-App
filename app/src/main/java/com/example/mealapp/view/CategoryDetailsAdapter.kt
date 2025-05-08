@@ -7,8 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mealapp.databinding.CategoryDetailsItemBinding
-import com.example.mealapp.model.IngredientItem
-import com.example.mealapp.model.Meals
+import com.example.mealapp.model.pojo.IngredientItem
 
 class CategoryDetailsAdapter(private val onItemClick: (IngredientItem) -> Unit) :
     ListAdapter<IngredientItem, CategoryDetailsAdapter.ViewHolder>(MyDiffUtil()) {

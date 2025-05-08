@@ -51,7 +51,7 @@
     </fragment>
     <fragment
         android:id="@+id/favouriteScreen"
-        android:name="com.example.mealapp.FavouriteScreen"
+        android:name="com.example.mealapp.view.FavouriteScreen"
         android:label="fragment_favourite_screen"
         tools:layout="@layout/fragment_favourite_screen" />
     <fragment
@@ -79,6 +79,10 @@
         android:label="fragment_recipe"
         tools:layout="@layout/fragment_recipe" >
         <argument
+            android:name="source"
+            app:argType="string"
+            android:defaultValue="home" />
+        <argument
             android:name="id"
             app:argType="string" />
         <action
@@ -87,6 +91,9 @@
         <action
             android:id="@+id/action_recipe_to_subCategory"
             app:destination="@id/subCategory" />
+        <action
+            android:id="@+id/action_recipe_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/videoFragment"

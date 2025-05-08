@@ -2,9 +2,11 @@ package com.example.mealapp.view
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -12,11 +14,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.example.mealapp.R
 import com.example.mealapp.databinding.FragmentHomeBinding
-import com.example.mealapp.model.CategoryMeal
-import com.example.mealapp.model.MealRepoImp
-import com.example.mealapp.network.MealRemoteImp
-import com.example.mealapp.network.ResponseState
-import com.example.mealapp.network.RetrofitHelper
+import com.example.mealapp.model.dataBase.DataBaseClient
+import com.example.mealapp.model.dataBase.MealLocalClass
+import com.example.mealapp.model.pojo.CategoryMeal
+import com.example.mealapp.model.pojo.MealRepoImp
+import com.example.mealapp.model.network.MealRemoteImp
+import com.example.mealapp.model.network.ResponseState
+import com.example.mealapp.model.network.RetrofitHelper
+import com.example.mealapp.model.pojo.MealDataFav
 import com.example.mealapp.viewModel.HomeViewFactory
 import com.example.mealapp.viewModel.HomeViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -27,11 +32,14 @@ import kotlinx.coroutines.launch
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private var isRandomMealFavorite = false
     private lateinit var homeAdapter: HomeAdapter
+    private var originalCategories: List<CategoryMeal> = emptyList()
     private val viewModel: HomeViewModel by viewModels {
         HomeViewFactory(
             MealRepoImp.getInstance(
-                MealRemoteImp.getInstance(RetrofitHelper.service)
+                MealRemoteImp.getInstance(RetrofitHelper.service),   MealLocalClass.getInstance(
+                    DataBaseClient.getInstance(requireContext()).mealApp())
             )
         )
     }
@@ -47,10 +55,38 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        homeAdapter = HomeAdapter { categoryMeal ->
-            val action = HomeFragmentDirections.actionHomeFragmentToSubCategory(categoryMeal.strCategory)
-            findNavController().navigate(action)
-        }
+        homeAdapter = HomeAdapter(
+            onItemClick = { categoryMeal ->
+                val action = HomeFragmentDirections.actionHomeFragmentToSubCategory(categoryMeal.strCategory)
+                findNavController().navigate(action)
+            },
+            onFavClicked = { categoryMeal ->
+                val updatedCategory = categoryMeal.copy(isFavorite = !categoryMeal.isFavorite)
+
+                // استبدال العنصر في القائمة الأصلية
+                originalCategories = originalCategories.map {
+                    if (it.idCategory == updatedCategory.idCategory) updatedCategory else it
+                }
+
+                // تحديث القائمة في الأدابتر
+                homeAdapter.submitList(originalCategories.take(8))
+                // Save to favorites
+                val mealToFav = MealDataFav(
+                    id = categoryMeal.idCategory.toLong(),
+                    title = categoryMeal.strCategory,
+                    img = categoryMeal.strCategoryThumb
+
+                )
+                if (updatedCategory.isFavorite) {
+
+                    viewModel.insertMealToFav(mealToFav)
+                    Log.d("fav", "Added to favorites: ${mealToFav.title}")
+                } else {
+
+                    viewModel.deleteMealFromDB(mealToFav)
+                    Log.d("fav", "Removed from favorites: ${mealToFav.title}")
+                }
+            })
 
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
@@ -65,6 +101,15 @@ class HomeFragment : Fragment() {
             layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = homeAdapter
         }
+        //search
+        binding.searchEditText.addTextChangedListener {
+            val newText = it.toString()
+            val filteredList = originalCategories.filter { category ->
+                category.strCategory.startsWith(newText, ignoreCase = true)
+            }
+            homeAdapter.submitList(filteredList.take(8))
+        }
+
 
         viewModel.getRandomMeal()
         viewModel.getCategoryMeal()
@@ -92,16 +137,38 @@ class HomeFragment : Fragment() {
                                         Glide.with(requireContext())
                                             .load(meal.strMealThumb)
                                             .into(binding.imageView17)
-
+                                        isRandomMealFavorite = false
+                                        binding.imageView11.setImageResource(R.drawable.fav2)
                                         // ✅ Set click listener here
                                         binding.cardView.setOnClickListener {
-                                            val bundle = Bundle().apply {
-                                                putString("id", meal.idMeal)
-                                            }
-                                            findNavController().navigate(R.id.action_homeFragment_to_recipe, bundle)
+                                            val action = HomeFragmentDirections.actionHomeFragmentToRecipe(
+                                                id = meal.idMeal,
+                                                source = "home"
+                                            )
+                                            findNavController().navigate(action)
                                         }
-                                    } else {
-                                        binding.textView13.text = "No meal found"
+                                        binding.imageView11.setOnClickListener {
+                                            isRandomMealFavorite = !isRandomMealFavorite
+                                            if (isRandomMealFavorite) {
+                                                // Insert into favorites
+                                                val favMeal = MealDataFav(
+                                                    id = meal.idMeal.toLong(),
+                                                    title = meal.strMeal,
+                                                    img = meal.strMealThumb
+                                                )
+                                                viewModel.insertMealToFav(favMeal)
+                                                binding.imageView11.setImageResource(R.drawable.fav)
+                                            } else {
+                                                // Delete from favorites
+                                                val favMeal = MealDataFav(
+                                                    id = meal.idMeal.toLong(),
+                                                    title = meal.strMeal,
+                                                    img = meal.strMealThumb
+                                                )
+                                                viewModel.deleteMealFromDB(favMeal)
+                                                binding.imageView11.setImageResource(R.drawable.fav2)
+                                            }
+                                        }
                                     }
                                 }
 
@@ -119,9 +186,11 @@ class HomeFragment : Fragment() {
                 viewModel.categoryMeal.collectLatest { viewStateResult ->
                     when (viewStateResult) {
                         is ResponseState.Success -> {
-                            val categories = viewStateResult.data?.take(8) // تحديد أول 8 عناصر فقط
+                            originalCategories = viewStateResult.data ?: emptyList()
+                            val categories = viewStateResult.data
                             if (categories != null) {
                                 homeAdapter.submitList(categories)
+
                             }
                         }
                         is ResponseState.Error -> {

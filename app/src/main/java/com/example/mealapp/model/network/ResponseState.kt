@@ -1,4 +1,4 @@
-package com.example.mealapp.network
+package com.example.mealapp.model.network
 
 sealed class ResponseState<out T> {
     data class Success<out T>(val data: T) : ResponseState<T>()

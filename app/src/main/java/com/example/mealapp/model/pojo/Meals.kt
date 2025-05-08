@@ -1,4 +1,4 @@
-package com.example.mealapp.model
+package com.example.mealapp.model.pojo
 
 data class Meals(
     val idMeal: String,

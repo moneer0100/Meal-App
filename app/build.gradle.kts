@@ -63,7 +63,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)  // تتوافق مع الإصدارات الأخرى
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.room.common.jvm)  // تتوافق مع الإصدارات الأخرى
 
     // Test dependencies
     testImplementation(libs.junit)
@@ -94,6 +95,10 @@ dependencies {
     implementation ("androidx.navigation:navigation-ui-ktx:2.6.0")
     //youtube
     implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
+    //room
+    implementation ("androidx.room:room-runtime:2.7.1")
+    kapt ("androidx.room:room-compiler:2.7.1")
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 
 
 }

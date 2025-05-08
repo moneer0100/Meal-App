@@ -1,4 +1,4 @@
-package com.example.mealapp.network
+package com.example.mealapp.model.network
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

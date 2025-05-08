@@ -10,12 +10,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.mealapp.R
-import com.example.mealapp.databinding.FragmentHomeBinding
 import com.example.mealapp.databinding.FragmentSeeAllCategoryBinding
-import com.example.mealapp.model.MealRepoImp
-import com.example.mealapp.network.MealRemoteImp
-import com.example.mealapp.network.ResponseState
-import com.example.mealapp.network.RetrofitHelper
+import com.example.mealapp.model.dataBase.DataBaseClient
+import com.example.mealapp.model.dataBase.MealLocalClass
+import com.example.mealapp.model.pojo.MealRepoImp
+import com.example.mealapp.model.network.MealRemoteImp
+import com.example.mealapp.model.network.ResponseState
+import com.example.mealapp.model.network.RetrofitHelper
+import com.example.mealapp.model.pojo.MealDataFav
 import com.example.mealapp.viewModel.HomeViewFactory
 import com.example.mealapp.viewModel.HomeViewModel
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +33,8 @@ class SeeAllCategory : Fragment() {
     private val viewModel: HomeViewModel by viewModels {
         HomeViewFactory(
             MealRepoImp.getInstance(
-                MealRemoteImp.getInstance(RetrofitHelper.service)
+                MealRemoteImp.getInstance(RetrofitHelper.service),   MealLocalClass.getInstance(
+                    DataBaseClient.getInstance(requireContext()).mealApp())
             )
         )
     }
@@ -50,10 +53,22 @@ class SeeAllCategory : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        homeAdapter = HomeAdapter { categoryMeal ->
-            val action = SeeAllCategoryDirections.actionSeeAllCategoryToSubCategory(categoryMeal.strCategory)
-            findNavController().navigate(action)
-        }
+
+        homeAdapter = HomeAdapter(
+            onItemClick = { categoryMeal ->
+                val action = HomeFragmentDirections.actionHomeFragmentToSubCategory(categoryMeal.strCategory)
+                findNavController().navigate(action)
+            },
+            onFavClicked = { categoryMeal ->
+                // Save to favorites
+                val mealToFav = MealDataFav(
+                    id = categoryMeal.idCategory.toLong(),
+                    title = categoryMeal.strCategory,
+                    img = categoryMeal.strCategoryThumb
+
+                )
+                viewModel.insertMealToFav(mealToFav)
+            })
 
         binding.recyclerViewCategory.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)

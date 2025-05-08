@@ -5,6 +5,13 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.google.gms.google.services) apply false
 }
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force ("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+        }
+    }
+}
 
 buildscript {
     repositories {

@@ -1,6 +1,7 @@
 package com.example.mealapp.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,17 +10,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 
-import com.example.mealapp.R
-import com.example.mealapp.databinding.FragmentRecipeBinding
 import com.example.mealapp.databinding.FragmentVideoBinding
-import com.example.mealapp.model.MealRepoImp
-import com.example.mealapp.model.Meals
-import com.example.mealapp.model.toIngredientList
-import com.example.mealapp.network.MealRemoteImp
-import com.example.mealapp.network.ResponseState
-import com.example.mealapp.network.RetrofitHelper
+import com.example.mealapp.model.dataBase.DataBaseClient
+import com.example.mealapp.model.dataBase.MealLocalClass
+import com.example.mealapp.model.pojo.MealRepoImp
+import com.example.mealapp.model.pojo.Meals
+import com.example.mealapp.model.pojo.toIngredientList
+import com.example.mealapp.model.network.MealRemoteImp
+import com.example.mealapp.model.network.ResponseState
+import com.example.mealapp.model.network.RetrofitHelper
 import com.example.mealapp.viewModel.HomeViewFactory
 import com.example.mealapp.viewModel.HomeViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -32,12 +32,13 @@ import kotlinx.coroutines.launch
 class VideoFragment : Fragment() {
     private var _binding: FragmentVideoBinding? = null
     private val binding get() = _binding!!
-
+    private lateinit var meal: Meals
     lateinit var categoryDetailsAdapter: CategoryDetailsAdapter
     private val viewModel: HomeViewModel by viewModels {
         HomeViewFactory(
             MealRepoImp.getInstance(
-                MealRemoteImp.getInstance(RetrofitHelper.service)
+                MealRemoteImp.getInstance(RetrofitHelper.service),   MealLocalClass.getInstance(
+                    DataBaseClient.getInstance(requireContext()).mealApp())
             )
         )
     }
@@ -54,7 +55,12 @@ class VideoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.imageView36.setOnClickListener{
-            findNavController().navigate(R.id.action_videoFragment_to_recipe)
+            if (::meal.isInitialized) {
+                val action = VideoFragmentDirections.actionVideoFragmentToRecipe(meal.idMeal)
+                findNavController().navigate(action)
+            } else {
+                Log.e("VideoFragment", "Meal not initialized")
+            }
         }
         val youTubePlayerView = binding.youtubePlayerView
         lifecycle.addObserver(youTubePlayerView)
@@ -73,18 +79,23 @@ class VideoFragment : Fragment() {
                 viewModel.categoryDetails.collectLatest { viewStateResult ->
                     when (viewStateResult) {
                         is ResponseState.Success -> {
-                            val meal = viewStateResult.data?.firstOrNull()
-                            if (meal != null ) {
-                            meal?.let {
-                                binding.textView29.text = it.strMeal
-                                binding.textViewDescription.text = it.strInstructions
-                                val videoId = it.strYoutube?.substringAfter("v=")?.take(11)
-                                videoId?.let { id ->
-                                    youTubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-                                        override fun onReady(youTubePlayer: YouTubePlayer) {
-                                            youTubePlayer.loadVideo(id, 0f)}})}}
-
-                            } else {
+                            val currentMeal = viewStateResult.data?.firstOrNull()
+                            if (currentMeal != null) {
+                                currentMeal.let {
+                                    binding.textView29.text = it.strMeal
+                                    binding.textViewDescription.text = it.strInstructions
+                                    meal = it
+                                    val videoId = it.strYoutube?.substringAfter("v=")?.take(11)
+                                    videoId?.let { id ->
+                                        youTubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+                                            override fun onReady(youTubePlayer: YouTubePlayer) {
+                                                youTubePlayer.loadVideo(id, 0f)
+                                            }
+                                        })
+                                    }
+                                }
+                            }
+                            else {
                                 binding.textView29.text = "No meal found"
                             }
                         }
@@ -106,6 +117,7 @@ class VideoFragment : Fragment() {
                             if (categories != null && categories.isNotEmpty()) {
                                 val ingredientList = categories[0].toIngredientList()
                                 categoryDetailsAdapter.submitList(ingredientList)
+                                binding.imageView36
                             }
                         }
                         is ResponseState.Error -> {

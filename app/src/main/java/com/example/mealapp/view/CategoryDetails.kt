@@ -8,19 +8,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 
 import com.example.mealapp.R
-import com.example.mealapp.databinding.FragmentHomeBinding
 import com.example.mealapp.databinding.FragmentRecipeBinding
-import com.example.mealapp.databinding.FragmentSubCategoryBinding
-import com.example.mealapp.model.MealRepoImp
-import com.example.mealapp.model.Meals
-import com.example.mealapp.model.toIngredientList
-import com.example.mealapp.network.MealRemoteImp
-import com.example.mealapp.network.ResponseState
-import com.example.mealapp.network.RetrofitHelper
+import com.example.mealapp.model.dataBase.Dao
+import com.example.mealapp.model.dataBase.DataBaseClient
+import com.example.mealapp.model.dataBase.MealLocalClass
+import com.example.mealapp.model.pojo.MealRepoImp
+import com.example.mealapp.model.pojo.Meals
+import com.example.mealapp.model.pojo.toIngredientList
+import com.example.mealapp.model.network.MealRemoteImp
+import com.example.mealapp.model.network.ResponseState
+import com.example.mealapp.model.network.RetrofitHelper
 import com.example.mealapp.viewModel.HomeViewFactory
 import com.example.mealapp.viewModel.HomeViewModel
 import kotlinx.coroutines.Dispatchers
@@ -30,12 +32,12 @@ import kotlinx.coroutines.launch
 class CategoryDetails : Fragment() {
     private var _binding: FragmentRecipeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var meal:Meals
+    private lateinit var meal: Meals
     lateinit var categoryDetailsAdapter: CategoryDetailsAdapter
     private val viewModel: HomeViewModel by viewModels {
         HomeViewFactory(
             MealRepoImp.getInstance(
-                MealRemoteImp.getInstance(RetrofitHelper.service)
+                MealRemoteImp.getInstance(RetrofitHelper.service),   MealLocalClass.getInstance(DataBaseClient.getInstance(requireContext()).mealApp())
             )
         )
     }
@@ -50,8 +52,14 @@ class CategoryDetails : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val args: CategoryDetailsArgs by navArgs()
         binding.imageView32.setOnClickListener {
-            findNavController().navigate(R.id.action_recipe_to_subCategory)
+            if (::meal.isInitialized) {
+                when (args.source) {
+                    "subcategory" -> findNavController().navigate(R.id.action_recipe_to_subCategory)
+                    "home" -> findNavController().navigate(R.id.action_recipe_to_homeFragment)
+                }
+            }
         }
         categoryDetailsAdapter=CategoryDetailsAdapter{}
         binding.recyclerView233.apply {

@@ -1,13 +1,12 @@
-package com.example.mealapp.network
+package com.example.mealapp.model.network
 
 
-import com.example.mealapp.model.CategoryResponse
-import com.example.mealapp.model.MealDetailsResponse
-import com.example.mealapp.model.RandomResponse
-import com.example.mealapp.model.SubCategoryMeal
-import com.example.mealapp.model.SubCategoryResponse
+import com.example.mealapp.model.pojo.CategoryResponse
+import com.example.mealapp.model.pojo.MealDetailsResponse
+import com.example.mealapp.model.pojo.RandomResponse
+import com.example.mealapp.model.pojo.SubCategoryResponse
 
-class MealRemoteImp private constructor(private val apiService: ApiService):MealRemoteInf {
+class MealRemoteImp private constructor(private val apiService: ApiService): MealRemoteInf {
     companion object {
         private var instance: MealRemoteImp? = null
         fun getInstance(apiService: ApiService): MealRemoteImp {
