@@ -45,7 +45,7 @@ class SeeAllCategory : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         _binding = FragmentSeeAllCategoryBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -56,11 +56,11 @@ class SeeAllCategory : Fragment() {
 
         homeAdapter = HomeAdapter(
             onItemClick = { categoryMeal ->
-                val action = HomeFragmentDirections.actionHomeFragmentToSubCategory(categoryMeal.strCategory)
+                val action = SeeAllCategoryDirections.actionSeeAllCategoryToSubCategory(categoryMeal.strCategory)
                 findNavController().navigate(action)
             },
             onFavClicked = { categoryMeal ->
-                // Save to favorites
+                
                 val mealToFav = MealDataFav(
                     id = categoryMeal.idCategory.toLong(),
                     title = categoryMeal.strCategory,

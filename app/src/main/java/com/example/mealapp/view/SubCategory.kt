@@ -56,7 +56,7 @@ class SubCategory : Fragment() {
 
         subCategoryAdapter=SubCategoryAdapter(
             onItemClick = { categoryMeal ->
-                val action = HomeFragmentDirections.actionHomeFragmentToSubCategory(categoryMeal.idMeal)
+                val action = SubCategoryDirections.actionSubCategoryToRecipe(categoryMeal.idMeal)
                 findNavController().navigate(action)
             },
             onFavClicked = { categoryMeal ->
@@ -89,6 +89,7 @@ class SubCategory : Fragment() {
         binding.recyclersubCategory.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = subCategoryAdapter
+
         }
             binding.imageView31.setOnClickListener{
                 findNavController().navigate(R.id.action_subCategory_to_homeFragment)
