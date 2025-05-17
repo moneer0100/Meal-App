@@ -87,12 +87,21 @@ class HomeFragment : Fragment() {
                     Log.d("fav", "Removed from favorites: ${mealToFav.title}")
                 }
             })
-
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
-            val userName = user.displayName ?: user.email ?: "Unknown User"
-            val firstName = userName.split(" ").firstOrNull()?.lowercase()?.replaceFirstChar { it.uppercase() } ?: "Unknown"
-            binding.textView10.text = firstName
+            val rawName = if (!user.displayName.isNullOrEmpty()) {
+                user.displayName?.split(" ")?.firstOrNull()
+            } else {
+                user.email?.substringBefore("@")?.substringBefore("+")
+            }
+
+            // إزالة الأرقام من الاسم وتحسين التنسيق
+            val cleanName = rawName
+                ?.replace(Regex("\\d"), "") // حذف الأرقام
+                ?.lowercase()
+                ?.replaceFirstChar { it.uppercase() } ?: "Unknown"
+
+            binding.textView10.text = cleanName
         } else {
             binding.textView10.text = "Guest"
         }

@@ -35,20 +35,39 @@ class SideMenu : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
-            val userName = user.displayName ?: user.email ?: "Unknown User"
-            val firstName = userName.split(" ").firstOrNull()?.lowercase()?.replaceFirstChar { it.uppercase() } ?: "Unknown"
-            binding.textView21.text = firstName
+            // محاولة الحصول على الاسم
+            val rawName = when {
+                !user.displayName.isNullOrEmpty() -> {
+                    user.displayName!!.split(" ").firstOrNull()
+                }
+                !user.email.isNullOrEmpty() -> {
+                    user.email!!.substringBefore("@").substringBefore("+")
+                }
+                else -> null
+            }
 
+            // تنظيف الاسم: إزالة الأرقام وتنسيقه
+            val cleanName = rawName
+                ?.replace(Regex("\\d"), "") // إزالة الأرقام
+                ?.replace(Regex("[^A-Za-z]"), "") // إزالة الرموز
+                ?.lowercase()
+                ?.replaceFirstChar { it.uppercase() } ?: "Unknown"
+
+            binding.textView21.text = cleanName
+
+            // تحميل الصورة
             val photoUrl = user.photoUrl
-            if (photoUrl != null) {
-                Glide.with(this)
-                    .load(photoUrl)
-                    .placeholder(R.drawable.name) // صورة افتراضية
-                    .into(binding.imageView23)
+            Glide.with(this)
+                .load(photoUrl ?: R.drawable.name) // استخدم صورة افتراضية إذا مفيش صورة
+                .into(binding.imageView23)
+
         } else {
+            // المستخدم مش مسجل دخول
             binding.textView21.text = "Guest"
+            Glide.with(this)
+                .load(R.drawable.name)
+                .into(binding.imageView23)
         }
-    }
         binding.imageView24.setOnClickListener{
             findNavController().navigate(R.id.action_sideMenu_to_homeFragment)
         }

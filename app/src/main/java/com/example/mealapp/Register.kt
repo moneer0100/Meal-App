@@ -1,10 +1,15 @@
 package com.example.mealapp
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -27,6 +32,7 @@ class Register : AppCompatActivity() {
     private lateinit var signInRequest: BeginSignInRequest
     var isPasswordVisible = false
     var isConfirmPasswordVisible = false
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,6 +49,7 @@ class Register : AppCompatActivity() {
         val login =findViewById<TextView>(R.id.textView9)
         val showpass=findViewById<ImageView>(R.id.imageView6)
         val showpass2=findViewById<ImageView>(R.id.imageView7)
+        val progressBar = findViewById<ProgressBar>(R.id.progresbarid)
         showpass.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
@@ -115,7 +122,19 @@ class Register : AppCompatActivity() {
                         ).show()
                     }
                 }
+
+            progressBar.visibility = View.VISIBLE
+
+            // Simulate login process (replace with actual login logic)
+            Handler(Looper.getMainLooper()).postDelayed({
+                progressBar.visibility = View.GONE
+                Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+
+                // Navigate to another activity if needed
+                // startActivity(Intent(this, HomeActivity::class.java))
+            }, 2000)
         }
+
 
 
         // إعداد Google Sign-In

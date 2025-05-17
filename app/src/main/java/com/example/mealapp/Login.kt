@@ -2,6 +2,9 @@ package com.example.mealapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.IntentSenderRequest
@@ -30,6 +33,7 @@ class Login : AppCompatActivity() {
         val registerLink = findViewById<TextView>(R.id.textView7)
         val googleSignInBtn = findViewById<ImageView>(R.id.imageView13)
         val showpass=findViewById<ImageView>(R.id.imageView12)
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
         showpass.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
@@ -85,7 +89,17 @@ class Login : AppCompatActivity() {
                         Toast.makeText(this, "Incorrect Email or Password", Toast.LENGTH_LONG).show()
                     }
                 }
+            progressBar.visibility = View.VISIBLE
+
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                progressBar.visibility = View.GONE
+                Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+
+
+            }, 2000)
         }
+
         // إعداد Google Sign-In
         signInRequest = BeginSignInRequest.builder()
             .setGoogleIdTokenRequestOptions(
